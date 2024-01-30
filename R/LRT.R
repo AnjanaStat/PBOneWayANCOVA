@@ -7,11 +7,12 @@
 #' @param k a positive integer
 #' @param q a positive integer
 #' @param alpha real number between 0 and 1 called significance level
+#' @param B a positive integer
 #'
 #' @return numeric vector
 #'
 #' @examples
-#' k=4;q=3
+#' k=4;q=3;B=5000;alpha=0.05
 #' N=c(20,10,10,20,20,10,10,20,20,10,10,20);S=c(1,1,2,1,1,2,3,1,2,4,6,3,2,4)
 #' g=NULL
 #' for(i in 1:(k*q))
@@ -26,8 +27,9 @@
 #'  G2[[i]]=rnorm(N[i],a[i],sqrt(S[i]))
 #' }
 #' Y=G2
+#' LRT(Y,X,k,q,alpha,B)
 #' @export
-LRT<-function(Y,X,k,q,alpha)
+LRT<-function(Y,X,k,q,alpha,B)
 {
   fun1<-function(data1,data2,k,q)
   {
@@ -340,11 +342,11 @@ LRT<-function(Y,X,k,q,alpha)
     value=fun1(g,data1,k,q)
     return(value)
   }
-  fun3<-function(data1,N,S,b,k,q,alpha)
+  fun3<-function(data1,N,S,b,k,q,alpha,B)
   {
-    x<-replicate(5000,fun2(data1,N,S,b,k,q))
+    x<-replicate(B,fun2(data1,N,S,b,k,q))
     y<-sort(x,decreasing=FALSE)
-    m=(alpha)*5000
+    m=(alpha)*B
     c<-y[m]
     return(c)
   }
@@ -414,7 +416,7 @@ LRT<-function(Y,X,k,q,alpha)
   S=t20
   set.seed(419)
   test_statistic<-fun1(data1,data2,k,q)
-  crit_value<-fun3(data2,N,S,b,k,q,alpha)
+  crit_value<-fun3(data2,N,S,b,k,q,alpha,B)
   result<-c(test_statistic,crit_value)
   print("test statistic value and critical value")
   print(result)
